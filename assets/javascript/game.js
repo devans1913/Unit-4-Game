@@ -1,14 +1,14 @@
 
-//Black Panther Character Array and Points
-var charName = ['Black Panther','Killmonger','Klaw','Okoye'];
+//Black Panther Character Array, Points, Attack
+var charName = ['blackp','Killmonger','Klaw','Okoye'];
 var charHP = [200, 170, 150, 180];
-var charImg = ['blackp.jpg', 'Killmonger.jpg', 'Klaw.jpg','Okoye.jpg'];
+var charImg = ['blackp.jpg','Killmonger.jpg','Klaw.jpg','Okoye.jpg'];
 var charHit = [20, 70, 80, 40];
 
 
 var userHP; var userAttack; var opponentHP; var opponentAttack; 
-opponents = 3; 
-var opponentAttackArray = ['attack']; 
+opponents = 1; 
+var opponentAttackArray = ['attack', 'block']; 
 
 //Start Game - Header Button
 $(".startButton").on("click", function(){
@@ -22,9 +22,9 @@ $(".restartButton").on("click", function(){
 	//removes characters off the board once they've been played.
 	if(startPressed = true){
 	for(var i = 0; i< charName.length; i++){
-		$('#'+charName[i]).remove();
+		$('#'+charName[i]).remove();		
 	}
-	opponents = 3;
+	opponents = 1;
 	newGame();
 	}
 });
@@ -51,13 +51,11 @@ for(var i = 0; i < charName.length; i++){
 
 $(document).on('click','.startStyle', function(){
 	userHP = $(this).data('hp');
-	console.log(userHP);
-
 	$(this).removeClass('charImg startStyle').addClass('userStyle');
 	$('.userChar').append($(this));
 
 	for(var i = 0; i < charName.length; i++){
-		if(charName[i] != $(this).data('name')){
+		if(charName[i] != $(this).data('name')){			
 			$('#'+charName[i]).removeClass('charImg startStyle').addClass('opponentStyle');
 			$('#'+charName[i]+ ' span').removeClass('characterHP');
 			$('.opponentChar').append($('#'+charName[i]));
@@ -72,12 +70,11 @@ function chooseOpponent(){
 //Show opponent options. 
 	$(document).on('click', '.opponentStyle', function(){
 		opponentHP = $(this).data('hp');
-		console.log(opponentHP);
 		$(this).removeClass('opponentSyle opponentChar').addClass('currentOpponent');
 		$(this).children('span').attr('class','enemigoHP');
 		$('.chosenOpponent').append($(this));
 
-		
+		opponentAttack = $(this).data('hit');
 		for(var i = 0; i < charName.length; i++){
 			if(charName[i] != $(this).data('name')){
 				$(document).off('click','.opponentStyle');
@@ -90,12 +87,10 @@ function chooseOpponent(){
 //Random Attack
 function generateOpponentAttack(){
 	var randomAttack = opponentAttackArray[Math.floor(Math.random() * 2)];
-		if(randomAttack == 'hit'){
-			opponentAttack = $('.currentOpponent').data('hit');
-		}
-		
-	console.log(randomAttack);
-	console.log(opponentAttack);
+
+	// if(randomAttack == 'attack'){
+		// 	opponentAttack = $(this).data('hit');
+		// }
 }
 
 //Calculate attacks
@@ -104,22 +99,27 @@ function displayHP(){
 		$('.currentOpponent span').html(opponentHP);
 		$('.userStyle').data('hp', userHP);
 		$('.characterHP').html(userHP);
-}
+	}
 
 function battleMode(){
 	$('.hit').on('click', function(){
 		generateOpponentAttack();
+		var randomAttack = opponentAttackArray[Math.floor(Math.random() * 2)];
+
 		userAttack = $('.userStyle').data('hit');
-		if(opponentAttack == 'block'){
-			userHP = parseInt(userHP - userAttack);
+		if(randomAttack == 'attack'){
+			opponentHP = parseInt(opponentHP - userAttack)
+			userHP = parseInt(userHP - opponentAttack);
 			displayHP();
 		}
 		else{
 			opponentHP = parseInt(opponentHP - userAttack);
-			userHP = parseInt(userHP - opponentAttack);
+			// userHP = parseInt(userHP - opponentAttack);
 			displayHP();
 		}
-		console.log(userHP +" "+ opponentHP);
+		console.log(randomAttack);
+		console.log(opponentHP);
+		console.log(userHP);
 		winOrLose()
 	});
 
@@ -154,9 +154,21 @@ function winOrLose(){
 	}
 	if ((opponentHP <= 0) && (opponents == 0)){
 		alert("Wakanda Forever! You've defeated your rival!");
+		
+			for(var i = 0; i< charName.length; i++){
+				$('#'+charName[i]).remove();		
+			}
+			opponents = 1;
+			newGame();
+			
 	}
 	if (userHP <= 0){
 		alert("Dwynn needs you to save Wakanda, play again");
+		for(var i = 0; i< charName.length; i++){
+			$('#'+charName[i]).remove();		
+		}
+		opponents = 1;
+		newGame();
 	}	
 }
 
